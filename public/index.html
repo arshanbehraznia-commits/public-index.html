@@ -91,11 +91,21 @@ background:#050505;
 position:relative;
 }
 
+#timerRow{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:0 4px;
+margin-bottom:4px;
+}
+
 #timer{
-font-size:65px;
-text-align:center;
+font-size:48px;
+text-align:right;
 font-weight:900;
 color:#4dffb8;
+white-space:nowrap;
 text-shadow:
 0 0 6px rgba(77,255,184,0.8),
 0 0 12px rgba(77,255,184,0.4);
@@ -107,11 +117,12 @@ text-shadow:none !important;
 }
 
 #bigSnipe{
-text-align:center;
-font-size:28px;
+font-size:18px;
 font-weight:900;
 color:#ff3b3b;
 display:none;
+white-space:nowrap;
+flex-shrink:0;
 }
 
 .player{
@@ -268,7 +279,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000; /* 🔥 ABOVE overlay now */
+    z-index:1000;
 }
 
 .confetti-piece{
@@ -284,7 +295,7 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg); /* smooth drop */
+    transform:translateY(200px) rotate(720deg);
 }
 } </style>
 
@@ -312,8 +323,11 @@ to{
 <div id="winnerCoins"></div>
 </div>
 
+<div id="timerRow">
 <div id="bigSnipe">🛡️ SNIPE DELAY</div>
 <div id="timer">1:00</div>
+</div>
+
 <div id="leaders"></div>
 <div id="participants">Participants: 0</div>
 
@@ -338,7 +352,7 @@ const piece = document.createElement("div");
 piece.className = "confetti-piece";
 
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
+piece.style.top = Math.random()*100 + "%";
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
 
@@ -387,11 +401,11 @@ const timerEl = document.getElementById('timer');
 if(data.inSnipe && data.timer <= 0){
 timerEl.innerText = "TIMER FINISHED";
 timerEl.style.textShadow = "none";
-timerEl.style.fontSize = "32px";
+timerEl.style.fontSize = "24px";
 timerEl.style.letterSpacing = "1px";
 } else {
 timerEl.innerText = formatTime(data.timer);
-timerEl.style.fontSize = "65px";
+timerEl.style.fontSize = "48px";
 }
 
 if(data.inSnipe){
