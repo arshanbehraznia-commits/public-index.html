@@ -91,6 +91,22 @@ background:#050505;
 position:relative;
 }
 
+#timerRow{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+}
+
+#bigSnipe{
+font-size:13px;
+font-weight:900;
+color:#ff3b3b;
+display:none;
+white-space:nowrap;
+line-height:1;
+}
+
 #timer{
 font-size:65px;
 text-align:center;
@@ -99,19 +115,12 @@ color:#4dffb8;
 text-shadow:
 0 0 6px rgba(77,255,184,0.8),
 0 0 12px rgba(77,255,184,0.4);
+line-height:1;
 }
 
 .timer-red{
 color:#ff3b3b !important;
 text-shadow:none !important;
-}
-
-#bigSnipe{
-text-align:left;
-font-size:28px;
-font-weight:900;
-color:#ff3b3b;
-display:none;
 }
 
 .player{
@@ -313,8 +322,11 @@ to{
 <div id="winnerCoins"></div>
 </div>
 
-<div id="bigSnipe">🛡️ SNIPE DELAY</div>
-<div id="timer">1:00</div>
+<div id="timerRow">
+  <div id="bigSnipe">🛡️ SNIPE<br>DELAY</div>
+  <div id="timer">1:00</div>
+</div>
+
 <div id="leaders"></div>
 <div id="participants">Participants: 0</div>
 
