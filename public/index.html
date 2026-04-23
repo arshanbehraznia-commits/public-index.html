@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <style>
@@ -15,58 +16,71 @@ body {
 .wrapper{width:390px;}
 
 .bar{
-padding:16px 20px;
-border-radius:14px;
-margin-bottom:10px;
-background:#111;
-font-weight:900;
-font-size:22px;
+padding:18px;
+border-radius:20px;
+margin-bottom:14px;
+background:#0a0a0a;
+font-weight:1000;
+font-size:18px;
 text-align:center;
-letter-spacing:1.5px;
+letter-spacing:1.2px;
+}
+
+.green{
+border:3px solid #00ff9c;
+color:#00ff9c;
 text-shadow:none;
 box-shadow:none;
 }
 
-.green{
-border:2.5px solid #00cc6a;
-color:#00cc6a;
-}
-
 #snipeBar{
+border:3px solid #ff3b3b;
 display:flex;
 align-items:center;
-padding:16px 20px;
-border-radius:14px;
-background:#111;
-font-weight:900;
-font-size:22px;
+padding:18px;
+border-radius:20px;
+background:#0a0a0a;
+font-weight:1000;
+font-size:18px;
 box-shadow:none;
-border:2.5px solid #cc2200;
-margin-bottom:10px;
 position:relative;
 }
 
-#snipeLeft{
-position:absolute;
-left:0;
-right:0;
+#winnerCoins .coinIcon{
+width:34px;
+height:34px;
+object-fit:contain;
+position:relative;
+top:2px;
+}
+
+#snipeCenter{
+flex:1;
 text-align:center;
-color:white;
-letter-spacing:1.5px;
-pointer-events:none;
+letter-spacing:1.2px;
+text-shadow:
+0 0 6px #ff3b3b,
+0 0 12px rgba(255,0,0,0.6);
+}
+
+#bgImage{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0.25;
+z-index:0;
 }
 
 #snipeTime{
-background:#cc2200;
-color:white;
-padding:6px 16px;
-border-radius:8px;
+position:absolute;
+right:12px;
+background:#ff3b3b;
+padding:6px 12px;
+border-radius:10px;
 font-weight:900;
-font-size:22px;
-letter-spacing:1px;
-margin-left:auto;
-position:relative;
-z-index:1;
 }
 
 .card{
@@ -77,38 +91,27 @@ background:#050505;
 position:relative;
 }
 
-#timerRow{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:14px;
-}
-
-#bigSnipe{
-font-size:22px;
-font-weight:900;
-color:#ff3b3b;
-display:none;
-white-space:nowrap;
-line-height:1;
-letter-spacing:1px;
-}
-
 #timer{
 font-size:65px;
+text-align:center;
 font-weight:900;
 color:#4dffb8;
 text-shadow:
 0 0 6px rgba(77,255,184,0.8),
 0 0 12px rgba(77,255,184,0.4);
-line-height:1;
-white-space:nowrap;
-text-align:center;
 }
 
 .timer-red{
 color:#ff3b3b !important;
 text-shadow:none !important;
+}
+
+#bigSnipe{
+text-align:center;
+font-size:28px;
+font-weight:900;
+color:#ff3b3b;
+display:none;
 }
 
 .player{
@@ -256,6 +259,7 @@ text-shadow:
 0 0 16px rgba(255,215,0,0.5);
 }
 
+/* 🎉 CONFETTI */
 #confetti{
     position:absolute;
     top:0;
@@ -264,7 +268,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000;
+    z-index:1000; /* 🔥 ABOVE overlay now */
 }
 
 .confetti-piece{
@@ -280,10 +284,10 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg);
+    transform:translateY(200px) rotate(720deg); /* smooth drop */
 }
-}
-</style>
+} </style>
+
 </head>
 
 <body>
@@ -292,9 +296,9 @@ to{
 
 <div class="bar green">✅ NO MINIMUM</div>
 
-<div id="snipeBar">
-  <div id="snipeLeft">🛡️ SNIPE DELAY</div>
-  <span id="snipeTime">20S</span>
+<div class="bar" id="snipeBar">
+<div id="snipeCenter">🛡️ SNIPE DELAY</div>
+<span id="snipeTime">20s</span>
 </div>
 
 <div class="card">
@@ -308,11 +312,8 @@ to{
 <div id="winnerCoins"></div>
 </div>
 
-<div id="timerRow">
-  <div id="bigSnipe">🛡️ SNIPE DELAY</div>
-  <div id="timer">1:00</div>
-</div>
-
+<div id="bigSnipe">🛡️ SNIPE DELAY</div>
+<div id="timer">1:00</div>
 <div id="leaders"></div>
 <div id="participants">Participants: 0</div>
 
@@ -324,19 +325,23 @@ to{
 <script>
 const socket = io();
 let avatars = {};
+
 let confettiInterval;
 
 function launchConfetti(){
 const container = document.getElementById('confetti');
 const colors = ["#ffd700","#ff3b3b","#4dffb8","#a855f7","#ffffff","#00eaff"];
+
 confettiInterval = setInterval(()=>{
 for(let i=0;i<8;i++){
 const piece = document.createElement("div");
 piece.className = "confetti-piece";
+
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%";
+piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
+
 container.appendChild(piece);
 setTimeout(()=>piece.remove(),4000);
 }
@@ -374,31 +379,30 @@ return `<div class="player ${cls}">
 resetBoard();
 
 socket.on('update', data => {
+
 avatars = data.avatars || {};
+
 const timerEl = document.getElementById('timer');
 
 if(data.inSnipe && data.timer <= 0){
 timerEl.innerText = "TIMER FINISHED";
 timerEl.style.textShadow = "none";
-timerEl.style.fontSize = "48px";
+timerEl.style.fontSize = "32px";
 timerEl.style.letterSpacing = "1px";
-} else if(data.inSnipe){
-timerEl.innerText = formatTime(data.timer);
-timerEl.style.fontSize = "48px";
-timerEl.style.letterSpacing = "";
 } else {
 timerEl.innerText = formatTime(data.timer);
 timerEl.style.fontSize = "65px";
-timerEl.style.letterSpacing = "";
 }
 
 if(data.inSnipe){
 timerEl.classList.add('timer-red');
+
 if(data.timer > 0){
 document.getElementById('bigSnipe').style.display = "block";
 } else {
 document.getElementById('bigSnipe').style.display = "none";
 }
+
 } else {
 timerEl.classList.remove('timer-red');
 document.getElementById('bigSnipe').style.display = "none";
@@ -414,6 +418,7 @@ document.getElementById('leaders').innerHTML =
 let medal = ["🥇","🥈","🥉"][i];
 let cls = ["first","second","third"][i];
 let x = sorted[i];
+
 if(!x){
 return `<div class="player ${cls}">
 <div class="medal">${medal}</div>
@@ -423,6 +428,7 @@ return `<div class="player ${cls}">
 <div class="coins"><img src="tiktok.png" class="coinIcon"> 0</div>
 </div></div>`;
 }
+
 return `<div class="player ${cls}">
 <div class="medal">${medal}</div>
 <img src="${avatars[x[0]] || ''}" class="avatar">
@@ -436,12 +442,16 @@ return `<div class="player ${cls}">
 
 socket.on('winner', w=>{
 const overlay = document.getElementById('winnerOverlay');
+
 document.getElementById('winnerName').innerText = w[0];
 document.getElementById('winnerCoins').innerHTML =
 `<img src="tiktok.png" class="coinIcon"> ${formatCoins(w[1])}`;
 document.getElementById('winnerAvatar').src = avatars[w[0]] || "";
+
 overlay.classList.add('show');
+
 launchConfetti();
+
 setTimeout(()=>{
 overlay.classList.remove('show');
 stopConfetti();
