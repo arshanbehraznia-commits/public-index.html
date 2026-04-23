@@ -95,11 +95,11 @@ position:relative;
 display:flex;
 align-items:center;
 justify-content:center;
-gap:10px;
+gap:14px;
 }
 
 #bigSnipe{
-font-size:13px;
+font-size:36px;
 font-weight:900;
 color:#ff3b3b;
 display:none;
@@ -108,14 +108,14 @@ line-height:1;
 }
 
 #timer{
-font-size:65px;
-text-align:center;
+font-size:36px;
 font-weight:900;
 color:#4dffb8;
 text-shadow:
 0 0 6px rgba(77,255,184,0.8),
 0 0 12px rgba(77,255,184,0.4);
 line-height:1;
+white-space:nowrap;
 }
 
 .timer-red{
@@ -323,7 +323,7 @@ to{
 </div>
 
 <div id="timerRow">
-  <div id="bigSnipe">🛡️ SNIPE<br>DELAY</div>
+  <div id="bigSnipe">🛡️ SNIPE DELAY</div>
   <div id="timer">1:00</div>
 </div>
 
@@ -400,11 +400,12 @@ const timerEl = document.getElementById('timer');
 if(data.inSnipe && data.timer <= 0){
 timerEl.innerText = "TIMER FINISHED";
 timerEl.style.textShadow = "none";
-timerEl.style.fontSize = "32px";
+timerEl.style.fontSize = "36px";
 timerEl.style.letterSpacing = "1px";
 } else {
 timerEl.innerText = formatTime(data.timer);
-timerEl.style.fontSize = "65px";
+timerEl.style.fontSize = "36px";
+timerEl.style.letterSpacing = "";
 }
 
 if(data.inSnipe){
