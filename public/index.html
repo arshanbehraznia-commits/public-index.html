@@ -44,7 +44,6 @@ font-weight:1000;
 font-size:18px;
 box-shadow:none;
 position:relative;
-margin-bottom:14px;
 }
 
 #winnerCoins .coinIcon{
@@ -55,16 +54,13 @@ position:relative;
 top:2px;
 }
 
-#snipeLabel{
-color:#ff3b3b;
+#snipeCenter{
+flex:1;
+text-align:center;
 letter-spacing:1.2px;
 text-shadow:
 0 0 6px #ff3b3b,
 0 0 12px rgba(255,0,0,0.6);
-}
-
-#snipeSpacer{
-flex:1;
 }
 
 #bgImage{
@@ -79,6 +75,8 @@ z-index:0;
 }
 
 #snipeTime{
+position:absolute;
+right:12px;
 background:#ff3b3b;
 padding:6px 12px;
 border-radius:10px;
@@ -261,6 +259,7 @@ text-shadow:
 0 0 16px rgba(255,215,0,0.5);
 }
 
+/* 🎉 CONFETTI */
 #confetti{
     position:absolute;
     top:0;
@@ -269,7 +268,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000;
+    z-index:1000; /* 🔥 ABOVE overlay now */
 }
 
 .confetti-piece{
@@ -285,10 +284,9 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg);
+    transform:translateY(200px) rotate(720deg); /* smooth drop */
 }
-}
-</style>
+} </style>
 
 </head>
 
@@ -298,10 +296,9 @@ to{
 
 <div class="bar green">✅ NO MINIMUM</div>
 
-<div id="snipeBar">
-  <span id="snipeLabel">🛡️ SNIPE DELAY</span>
-  <div id="snipeSpacer"></div>
-  <span id="snipeTime">20s</span>
+<div class="bar" id="snipeBar">
+<div id="snipeCenter">🛡️ SNIPE DELAY</div>
+<span id="snipeTime">20s</span>
 </div>
 
 <div class="card">
@@ -341,7 +338,7 @@ const piece = document.createElement("div");
 piece.className = "confetti-piece";
 
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%";
+piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
 
