@@ -98,16 +98,17 @@ gap:14px;
 }
 
 #bigSnipe{
-font-size:36px;
+font-size:22px;
 font-weight:900;
 color:#ff3b3b;
 display:none;
 white-space:nowrap;
 line-height:1;
+letter-spacing:1px;
 }
 
 #timer{
-font-size:36px;
+font-size:65px;
 font-weight:900;
 color:#4dffb8;
 text-shadow:
@@ -392,11 +393,15 @@ const timerEl = document.getElementById('timer');
 if(data.inSnipe && data.timer <= 0){
 timerEl.innerText = "TIMER FINISHED";
 timerEl.style.textShadow = "none";
-timerEl.style.fontSize = "36px";
+timerEl.style.fontSize = "48px";
 timerEl.style.letterSpacing = "1px";
+} else if(data.inSnipe){
+timerEl.innerText = formatTime(data.timer);
+timerEl.style.fontSize = "48px";
+timerEl.style.letterSpacing = "";
 } else {
 timerEl.innerText = formatTime(data.timer);
-timerEl.style.fontSize = "36px";
+timerEl.style.fontSize = "65px";
 timerEl.style.letterSpacing = "";
 }
 
