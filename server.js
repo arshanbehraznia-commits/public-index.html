@@ -7,7 +7,17 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// 🔥 SERVE FRONTEND
 app.use(express.static('public'));
+
+// 🔥 FIX ROUTES (IMPORTANT)
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
+
+app.get('/control.html', (req, res) => {
+    res.sendFile(__dirname + '/public/control.html');
+});
 
 let tiktok = null;
 let connected = false;
@@ -21,7 +31,6 @@ let running = false;
 let inSnipe = false;
 
 const SNIPE_TIME = 20;
-const PORT = process.env.PORT || 3001;
 
 // 🔁 TIMER LOOP
 setInterval(() => {
@@ -74,10 +83,9 @@ io.on('connection', socket => {
 
             socket.emit('connected');
 
-            // 🎁 GIFTS (FIXED)
+            // 🎁 GIFTS
             tiktok.on('gift', data => {
 
-                // ❌ BLOCK ONLY AFTER AUCTION ENDS
                 if (!running) return;
 
                 const user = data.uniqueId;
@@ -181,7 +189,7 @@ io.on('connection', socket => {
         timer = Math.max(0, timer - Number(t));
     });
 
-    // ➕ ADD COINS (ALWAYS ALLOWED ✅)
+    // ➕ ADD COINS
     socket.on('addCoins', ({user, amount}) => {
 
         if (!user || !amount) return;
@@ -225,6 +233,6 @@ io.on('connection', socket => {
 
 });
 
-server.listen(PORT, () => {
-    console.log(`Running on port ${PORT}`);
+server.listen(3001, () => {
+    console.log("Running on http://localhost:3001");
 });
