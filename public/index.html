@@ -91,6 +91,10 @@ background:#050505;
 position:relative;
 }
 
+#timerWrapper{
+position:relative;
+}
+
 #timer{
 font-size:65px;
 text-align:center;
@@ -107,11 +111,15 @@ text-shadow:none !important;
 }
 
 #bigSnipe{
-text-align:center;
-font-size:28px;
+position:absolute;
+left:0;
+top:50%;
+transform:translateY(-50%);
+font-size:18px;
 font-weight:900;
 color:#ff3b3b;
 display:none;
+white-space:nowrap;
 }
 
 .player{
@@ -268,7 +276,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000; /* 🔥 ABOVE overlay now */
+    z-index:1000;
 }
 
 .confetti-piece{
@@ -284,7 +292,7 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg); /* smooth drop */
+    transform:translateY(200px) rotate(720deg);
 }
 } </style>
 
@@ -312,8 +320,11 @@ to{
 <div id="winnerCoins"></div>
 </div>
 
+<div id="timerWrapper">
 <div id="bigSnipe">🛡️ SNIPE DELAY</div>
 <div id="timer">1:00</div>
+</div>
+
 <div id="leaders"></div>
 <div id="participants">Participants: 0</div>
 
@@ -338,7 +349,7 @@ const piece = document.createElement("div");
 piece.className = "confetti-piece";
 
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
+piece.style.top = Math.random()*100 + "%";
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
 
