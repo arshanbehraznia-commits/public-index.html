@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<style>
+body {
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:transparent;
+    color:white;
+    display:flex;
+    justify-content:center;
+    padding-top:10px;
+}
+
+.wrapper{width: 390px;px;}
+
+.bar{
+padding:18px;
+border-radius:20px;
+margin-bottom:14px;
+background:#0a0a0a;
+font-weight:1000;
+font-size:18px;
+text-align:center;
+letter-spacing:1.2px;
+}
+
+.green{
+border:3px solid #00ff9c;
+color:#00ff9c;
+text-shadow:none;
+box-shadow:none;
+}
+
+#snipeBar{
+border:3px solid #ff3b3b;
+display:flex;
+align-items:center;
+padding:18px;
+border-radius:20px;
+background:#0a0a0a;
+font-weight:1000;
+font-size:18px;
+box-shadow:none;
+position:relative;
+}
+
+#winnerCoins .coinIcon{
+width:34px;
+height:34px;
+object-fit:contain;
+position:relative;
+top:2px;
+}
+
+#snipeCenter{
+flex:1;
+text-align:center;
+letter-spacing:1.2px;
+text-shadow:
+0 0 6px #ff3b3b,
+0 0 12px rgba(255,0,0,0.6);
+}
+
+#bgImage{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0.25;
+z-index:0;
+}
+
+#snipeTime{
+position:absolute;
+right:12px;
+background:#ff3b3b;
+padding:6px 12px;
+border-radius:10px;
+font-weight:900;
+}
+
+.card{
+border:2px solid gold;
+border-radius:24px;
+padding:18px;
+background:#050505;
+position:relative;
+}
+
+#timer{
+font-size:65px;
+text-align:center;
+font-weight:900;
+color:#4dffb8;
+text-shadow:
+0 0 6px rgba(77,255,184,0.8),
+0 0 12px rgba(77,255,184,0.4);
+}
+
+.timer-red{
+color:#ff3b3b !important;
+text-shadow:none !important;
+}
+
+#bigSnipe{
+text-align:center;
+font-size:28px;
+font-weight:900;
+color:#ff3b3b;
+display:none;
+}
+
+.player{
+position:relative;
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px;
+margin:8px 0;
+border-radius:16px;
+overflow:hidden;
+}
+
+.first{
+background:rgba(255,215,0,0.12);
+border:1.5px solid rgba(255,215,0,0.8);
+box-shadow:
+0 0 8px rgba(255,215,0,0.5),
+inset 0 0 6px rgba(255,215,0,0.2);
+}
+
+.second{
+background:rgba(200,200,200,0.12);
+border:1.5px solid rgba(220,220,220,0.8);
+box-shadow:
+0 0 8px rgba(200,200,200,0.5),
+inset 0 0 6px rgba(200,200,200,0.2);
+}
+
+.third{
+background:rgba(205,127,50,0.12);
+border:1.5px solid rgba(205,127,50,0.8);
+box-shadow:
+0 0 8px rgba(205,127,50,0.5),
+inset 0 0 6px rgba(205,127,50,0.2);
+}
+
+.medal{
+width:40px;
+text-align:center;
+font-size:30px;
+}
+
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:#444;
+object-fit:cover;
+border:2px solid rgba(255,255,255,0.2);
+}
+
+.text{display:flex;flex-direction:column;}
+
+.username{font-weight:900;}
+
+.coins{
+display:inline-flex;
+align-items:center;
+gap:6px;
+font-weight:900;
+font-size:18px;
+color:#ffd700;
+text-shadow:
+0 0 6px rgba(255,215,0,0.8),
+0 0 12px rgba(255,215,0,0.4);
+}
+
+.coinIcon{
+width:20px;
+height:20px;
+object-fit:contain;
+}
+
+#participants{
+text-align:center;
+margin-top:12px;
+font-weight:700;
+background:#1a1a1a;
+padding:10px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,0.1);
+}
+
+#winnerOverlay{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+border-radius:24px;
+background:linear-gradient(135deg,#2a003f,#6a00ff);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:10px;
+border:2px solid #a855f7;
+box-shadow:
+0 0 25px rgba(168,85,247,0.8),
+inset 0 0 12px rgba(168,85,247,0.3);
+opacity:0;
+transition:.3s;
+z-index:999;
+}
+
+#winnerTitle{
+font-size:26px;
+font-weight:900;
+color:white;
+letter-spacing:2px;
+text-shadow:
+0 0 8px rgba(255,255,255,0.8),
+0 0 14px rgba(168,85,247,0.8);
+margin-bottom:14px;
+}
+
+#winnerOverlay.show{opacity:1;}
+
+#winnerAvatar{
+width:90px;
+height:90px;
+border-radius:50%;
+border:4px solid gold;
+}
+
+#winnerName{
+font-size:26px;
+font-weight:900;
+color:#ffd700;
+text-shadow:
+0 0 8px rgba(255,215,0,0.9),
+0 0 16px rgba(255,215,0,0.5);
+}
+
+#winnerCoins{
+display:flex;
+align-items:center;
+gap:10px;
+font-size:34px;
+font-weight:900;
+color:#ffd700;
+text-shadow:
+0 0 8px rgba(255,215,0,0.9),
+0 0 16px rgba(255,215,0,0.5);
+}
+
+/* 🎉 CONFETTI */
+#confetti{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1000; /* 🔥 ABOVE overlay now */
+}
+
+.confetti-piece{
+position:absolute;
+width:6px;
+height:12px;
+opacity:0.9;
+animation:fall linear forwards;
+}
+
+@keyframes fall{
+from{
+    transform:translateY(0) rotate(0deg);
+}
+to{
+    transform:translateY(200px) rotate(720deg); /* smooth drop */
+}
+} </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="bar green">✅ NO MINIMUM</div>
+
+<div class="bar" id="snipeBar">
+<div id="snipeCenter">🛡️ SNIPE DELAY</div>
+<span id="snipeTime">20s</span>
+</div>
+
+<div class="card">
+
+<div id="confetti"></div>
+
+<div id="winnerOverlay">
+<div id="winnerTitle">WINNER!</div>
+<img id="winnerAvatar">
+<div id="winnerName"></div>
+<div id="winnerCoins"></div>
+</div>
+
+<div id="bigSnipe">🛡️ SNIPE DELAY</div>
+<div id="timer">1:00</div>
+<div id="leaders"></div>
+<div id="participants">Participants: 0</div>
+
+</div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+let avatars = {};
+
+let confettiInterval;
+
+function launchConfetti(){
+const container = document.getElementById('confetti');
+const colors = ["#ffd700","#ff3b3b","#4dffb8","#a855f7","#ffffff","#00eaff"];
+
+confettiInterval = setInterval(()=>{
+for(let i=0;i<8;i++){
+const piece = document.createElement("div");
+piece.className = "confetti-piece";
+
+piece.style.left = Math.random()*100 + "%";
+piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
+piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+piece.style.animationDuration = (Math.random()*2 + 2) + "s";
+
+container.appendChild(piece);
+setTimeout(()=>piece.remove(),4000);
+}
+},150);
+}
+
+function stopConfetti(){
+clearInterval(confettiInterval);
+document.getElementById('confetti').innerHTML = "";
+}
+
+function formatCoins(n){
+return Number(n).toLocaleString();
+}
+
+function formatTime(t){
+let m=Math.floor(t/60), s=t%60;
+return m+":"+(s<10?"0"+s:s);
+}
+
+function resetBoard(){
+document.getElementById('leaders').innerHTML =
+[0,1,2].map(i=>{
+let medal = ["🥇","🥈","🥉"][i];
+let cls = ["first","second","third"][i];
+return `<div class="player ${cls}">
+<div class="medal">${medal}</div>
+<div class="avatar"></div>
+<div class="text">
+<div class="username">Waiting...</div>
+<div class="coins"><img src="tiktok.png" class="coinIcon"> 0</div>
+</div></div>`;
+}).join("");
+}
+resetBoard();
+
+socket.on('update', data => {
+
+avatars = data.avatars || {};
+
+const timerEl = document.getElementById('timer');
+
+if(data.inSnipe && data.timer <= 0){
+timerEl.innerText = "TIMER FINISHED";
+timerEl.style.textShadow = "none";
+timerEl.style.fontSize = "32px";
+timerEl.style.letterSpacing = "1px";
+} else {
+timerEl.innerText = formatTime(data.timer);
+timerEl.style.fontSize = "65px";
+}
+
+if(data.inSnipe){
+timerEl.classList.add('timer-red');
+
+if(data.timer > 0){
+document.getElementById('bigSnipe').style.display = "block";
+} else {
+document.getElementById('bigSnipe').style.display = "none";
+}
+
+} else {
+timerEl.classList.remove('timer-red');
+document.getElementById('bigSnipe').style.display = "none";
+}
+
+let count = data.count || Object.keys(data.bids || {}).length;
+document.getElementById('participants').innerText = "👾 Participants: " + count;
+
+let sorted = Object.entries(data.bids || {}).sort((a,b)=>b[1]-a[1]);
+
+document.getElementById('leaders').innerHTML =
+[0,1,2].map(i=>{
+let medal = ["🥇","🥈","🥉"][i];
+let cls = ["first","second","third"][i];
+let x = sorted[i];
+
+if(!x){
+return `<div class="player ${cls}">
+<div class="medal">${medal}</div>
+<div class="avatar"></div>
+<div class="text">
+<div class="username">Waiting...</div>
+<div class="coins"><img src="tiktok.png" class="coinIcon"> 0</div>
+</div></div>`;
+}
+
+return `<div class="player ${cls}">
+<div class="medal">${medal}</div>
+<img src="${avatars[x[0]] || ''}" class="avatar">
+<div class="text">
+<div class="username">${x[0]}</div>
+<div class="coins"><img src="tiktok.png" class="coinIcon"> ${formatCoins(x[1])}</div>
+</div>
+</div>`;
+}).join("");
+});
+
+socket.on('winner', w=>{
+const overlay = document.getElementById('winnerOverlay');
+
+document.getElementById('winnerName').innerText = w[0];
+document.getElementById('winnerCoins').innerHTML =
+`<img src="tiktok.png" class="coinIcon"> ${formatCoins(w[1])}`;
+document.getElementById('winnerAvatar').src = avatars[w[0]] || "";
+
+overlay.classList.add('show');
+
+launchConfetti();
+
+setTimeout(()=>{
+overlay.classList.remove('show');
+stopConfetti();
+},4000);
+});
+</script>
+
+</body>
+</html>

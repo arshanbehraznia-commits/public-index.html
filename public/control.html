@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+    background:#000;
+    color:white;
+    text-align:center;
+    font-family:sans-serif;
+}
+
+button{
+    margin:4px;
+    padding:10px 12px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.green{background:#00d084;color:black;}
+.red{background:red;color:white;}
+.blue{background:#00aaff;color:white;}
+
+.user{
+    background:#111;
+    margin:6px;
+    padding:10px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* 🔥 NEW INPUT STYLE */
+.coinInput{
+    width:70px;
+    padding:5px;
+    border-radius:6px;
+    border:none;
+    text-align:center;
+    margin-left:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎮 CONTROL PANEL</h2>
+
+<!-- 🔥 TIKTOK CONNECT -->
+<input id="username" placeholder="tiktok username (no @)">
+<button class="blue" onclick="connect()">Connect TikTok</button>
+
+<br><br>
+
+<button class="green" onclick="start()">Start</button>
+<button onclick="pause()">Pause</button>
+<button onclick="resume()">Resume</button>
+<button class="red" onclick="reset()">Reset</button>
+
+<br><br>
+
+<button onclick="addTime(10)">+10s</button>
+<button onclick="addTime(30)">+30s</button>
+<button onclick="addTime(-10)">-10s</button>
+<button onclick="addTime(-30)">-30s</button>
+
+<br><br>
+
+<input id="user" placeholder="user">
+<input id="coins" placeholder="coins">
+<button onclick="addUser()">Add User</button>
+
+<h3>👥 LIVE USERS</h3>
+<div id="users"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+
+// 🔥 CONNECT TIKTOK
+function connect(){
+    let user = document.getElementById('username').value;
+    socket.emit('connectTikTok', user);
+}
+
+socket.on('connected', () => alert("Connected to TikTok ✅"));
+socket.on('failed', () => alert("Failed ❌ (Are you LIVE?)"));
+
+// 🎮 CONTROLS
+function start(){ socket.emit('start'); }
+function pause(){ socket.emit('pause'); }
+function resume(){ socket.emit('resume'); }
+function reset(){ socket.emit('reset'); }
+
+function addTime(t){ socket.emit('addTime', t); }
+
+// ➕ ADD USER (UNCHANGED)
+function addUser(){
+    let u = document.getElementById('user').value;
+    let c = Number(document.getElementById('coins').value);
+    socket.emit('addCoins',{user:u,amount:c});
+}
+
+// 🔥 NEW ADD COINS FUNCTION
+function setCoins(user){
+    const input = document.getElementById(`input-${user}`);
+    const amount = Number(input.value);
+
+    if(!amount) return;
+
+    socket.emit('addCoins',{user,amount});
+    input.value = "";
+}
+
+// 🔥 LIVE USERS (UPDATED UI ONLY)
+let typingUser = null;
+
+let isTyping = false;
+
+socket.on('update', data => {
+
+    // ❌ STOP updating if user is typing
+    if(isTyping) return;
+
+    const usersDiv = document.getElementById('users');
+
+    usersDiv.innerHTML = Object.entries(data.bids)
+        .sort((a,b)=>b[1]-a[1])
+        .map(([u,c]) => `
+        <div class="user">
+            <span>${u}</span>
+            <span>
+                ${c} 🪙
+                <input 
+                    type="number" 
+                    id="input-${u}" 
+                    placeholder="coins"
+                    class="coinInput"
+                    onfocus="isTyping=true"
+                    onblur="setTimeout(()=>isTyping=false,200)"
+                >
+                <button onclick="setCoins('${u}')" class="blue">SET</button>
+            </span>
+        </div>
+        `).join("");
+});
+</script>
+
+</body>
+</html>
