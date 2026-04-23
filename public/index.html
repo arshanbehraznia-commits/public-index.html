@@ -107,7 +107,7 @@ text-shadow:none !important;
 }
 
 #bigSnipe{
-text-align:center;
+text-align:left;
 font-size:28px;
 font-weight:900;
 color:#ff3b3b;
@@ -268,7 +268,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000; /* 🔥 ABOVE overlay now */
+    z-index:1000;
 }
 
 .confetti-piece{
@@ -284,9 +284,10 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg); /* smooth drop */
+    transform:translateY(200px) rotate(720deg);
 }
-} </style>
+}
+</style>
 
 </head>
 
@@ -338,7 +339,7 @@ const piece = document.createElement("div");
 piece.className = "confetti-piece";
 
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
+piece.style.top = Math.random()*100 + "%";
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
 
