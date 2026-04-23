@@ -29,13 +29,12 @@ box-shadow:none;
 
 .green{
 border:2.5px solid #00cc6a;
-color:white;
+color:#00cc6a;
 }
 
 #snipeBar{
 display:flex;
 align-items:center;
-justify-content:space-between;
 padding:16px 20px;
 border-radius:14px;
 background:#111;
@@ -44,14 +43,17 @@ font-size:22px;
 box-shadow:none;
 border:2.5px solid #cc2200;
 margin-bottom:10px;
+position:relative;
 }
 
 #snipeLeft{
-display:flex;
-align-items:center;
-gap:10px;
+position:absolute;
+left:0;
+right:0;
+text-align:center;
 color:white;
 letter-spacing:1.5px;
+pointer-events:none;
 }
 
 #snipeTime{
@@ -62,6 +64,9 @@ border-radius:8px;
 font-weight:900;
 font-size:22px;
 letter-spacing:1px;
+margin-left:auto;
+position:relative;
+z-index:1;
 }
 
 .card{
