@@ -10,8 +10,12 @@ const io = new Server(server);
 // 🔥 SERVE FRONTEND
 app.use(express.static('public'));
 
-// 🔥 FIX ROUTES (IMPORTANT)
+// 🔥 FIX ROUTES
 app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
+
+app.get('/index.html', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });
 
@@ -129,6 +133,7 @@ io.on('connection', socket => {
 
         } catch (err) {
             console.log("Connection failed", err);
+            socket.emit('failed');
         }
     });
 
