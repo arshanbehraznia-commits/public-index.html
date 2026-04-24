@@ -16,33 +16,33 @@ body {
 .wrapper{width:390px;}
 
 .bar{
-padding:18px;
-border-radius:20px;
-margin-bottom:14px;
-background:#0a0a0a;
-font-weight:1000;
+width:350px;
+height:56px;
+border-radius:12px;
+background:#050505;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:"Arial Black",Arial,sans-serif;
 font-size:18px;
-text-align:center;
-letter-spacing:1.2px;
-}
-
-.green{
-border:3px solid #00ff9c;
-color:#00ff9c;
+font-weight:900;
+letter-spacing:0.3px;
+margin-bottom:8px;
 text-shadow:none;
 box-shadow:none;
 }
 
+.green{
+border:2px solid #2ec49a;
+color:#2ec49a;
+font-size:20px;
+letter-spacing:1.8px;
+transform:scaleY(1.08);
+}
+
 #snipeBar{
-border:3px solid #ff3b3b;
-display:flex;
-align-items:center;
-padding:18px;
-border-radius:20px;
-background:#0a0a0a;
-font-weight:1000;
-font-size:18px;
-box-shadow:none;
+border:2px solid #ff3b3b;
+color:white;
 position:relative;
 }
 
@@ -57,10 +57,11 @@ top:2px;
 #snipeCenter{
 flex:1;
 text-align:center;
-letter-spacing:1.2px;
-text-shadow:
-0 0 6px #ff3b3b,
-0 0 12px rgba(255,0,0,0.6);
+padding-right:78px;
+font-size:18px;
+letter-spacing:0.3px;
+transform:scaleY(1.05);
+text-shadow:none;
 }
 
 #bgImage{
@@ -76,13 +77,17 @@ z-index:0;
 
 #snipeTime{
 position:absolute;
-right:12px;
-background:#ff3b3b;
-padding:6px 12px;
-border-radius:10px;
+right:48px;
+background:#ff4545;
+color:white;
+padding:8px 12px;
+border-radius:8px;
+font-size:20px;
+font-family:"Arial Black",Arial,sans-serif;
 font-weight:900;
+text-shadow:none;
+box-shadow:none;
 }
-
 .card{
 border:2px solid gold;
 border-radius:24px;
