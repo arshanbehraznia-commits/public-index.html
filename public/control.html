@@ -3,83 +3,156 @@
 <head>
 <style>
 body{
-    background:#000;
+    background:#050505;
     color:white;
     text-align:center;
-    font-family:sans-serif;
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:20px;
+}
+
+.panel{
+    max-width:720px;
+    margin:auto;
+}
+
+h2{
+    font-family:"Arial Black", Arial, sans-serif;
+    letter-spacing:.5px;
+}
+
+.section{
+    background:#111;
+    border:1px solid #222;
+    border-radius:16px;
+    padding:16px;
+    margin:14px 0;
+}
+
+input{
+    padding:11px;
+    border-radius:10px;
+    border:1px solid #333;
+    background:#070707;
+    color:white;
+    outline:none;
 }
 
 button{
     margin:4px;
-    padding:10px 12px;
+    padding:11px 14px;
     border:none;
-    border-radius:8px;
-    font-weight:bold;
+    border-radius:10px;
+    font-weight:900;
     cursor:pointer;
+    font-family:Arial, sans-serif;
 }
 
-.green{background:#00d084;color:black;}
-.red{background:red;color:white;}
-.blue{background:#00aaff;color:white;}
+.green{background:#2ec49a;color:black;}
+.red{background:#ff3b3b;color:white;}
+.blue{background:#1da1ff;color:white;}
+.gold{background:#ffd34d;color:black;}
+.purple{background:#8b5cf6;color:white;}
+.dark{background:#222;color:white;}
 
 .user{
-    background:#111;
-    margin:6px;
-    padding:10px;
-    border-radius:12px;
+    background:#0b0b0b;
+    border:1px solid #252525;
+    margin:8px 0;
+    padding:12px;
+    border-radius:14px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    gap:10px;
 }
 
-/* 🔥 NEW INPUT STYLE */
+.userLeft{
+    text-align:left;
+    min-width:140px;
+}
+
+.userName{
+    font-weight:900;
+    font-size:16px;
+}
+
+.userCoins{
+    color:#ffd34d;
+    font-weight:900;
+    margin-top:4px;
+}
+
+.userActions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
 .coinInput{
-    width:70px;
-    padding:5px;
-    border-radius:6px;
-    border:none;
+    width:75px;
+    padding:9px;
+    border-radius:8px;
+    border:1px solid #333;
     text-align:center;
-    margin-left:6px;
+    margin-left:4px;
+}
+
+.smallBtn{
+    padding:9px 11px;
+    font-size:13px;
+}
+
+#users{
+    margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="panel">
+
 <h2>🎮 CONTROL PANEL</h2>
 
-<!-- 🔥 TIKTOK CONNECT -->
+<div class="section">
 <input id="username" placeholder="tiktok username (no @)">
 <button class="blue" onclick="connect()">Connect TikTok</button>
+</div>
 
-<br><br>
-
+<div class="section">
 <button class="green" onclick="start()">Start</button>
-<button onclick="pause()">Pause</button>
-<button onclick="resume()">Resume</button>
+<button class="dark" onclick="pause()">Pause</button>
+<button class="dark" onclick="resume()">Resume</button>
 <button class="red" onclick="reset()">Reset</button>
+</div>
 
-<br><br>
-
+<div class="section">
 <button onclick="addTime(10)">+10s</button>
 <button onclick="addTime(30)">+30s</button>
 <button onclick="addTime(-10)">-10s</button>
 <button onclick="addTime(-30)">-30s</button>
+</div>
 
-<br><br>
-
+<div class="section">
 <input id="user" placeholder="user">
 <input id="coins" placeholder="coins">
-<button onclick="addUser()">Add User</button>
+<button class="gold" onclick="addUser()">Add User</button>
+</div>
 
+<div class="section">
 <h3>👥 LIVE USERS</h3>
 <div id="users"></div>
+</div>
+
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
 
-// 🔥 CONNECT TIKTOK
 function connect(){
     let user = document.getElementById('username').value;
     socket.emit('connectTikTok', user);
@@ -88,24 +161,24 @@ function connect(){
 socket.on('connected', () => alert("Connected to TikTok ✅"));
 socket.on('failed', () => alert("Failed ❌ (Are you LIVE?)"));
 
-// 🎮 CONTROLS
 function start(){ socket.emit('start'); }
 function pause(){ socket.emit('pause'); }
 function resume(){ socket.emit('resume'); }
-function reset(){ socket.emit('reset'); }
+function reset(){
+    userOrder = [];
+    socket.emit('reset');
+}
 
 function addTime(t){ socket.emit('addTime', t); }
 
-// ➕ ADD USER (UNCHANGED)
 function addUser(){
     let u = document.getElementById('user').value;
     let c = Number(document.getElementById('coins').value);
     socket.emit('addCoins',{user:u,amount:c});
 }
 
-// 🔥 NEW ADD COINS FUNCTION
 function setCoins(user){
-    const input = document.getElementById(`input-${user}`);
+    const input = document.getElementById(`input-${safeId(user)}`);
     const amount = Number(input.value);
 
     if(!amount) return;
@@ -114,37 +187,70 @@ function setCoins(user){
     input.value = "";
 }
 
-// 🔥 LIVE USERS (UPDATED UI ONLY)
-let typingUser = null;
+function add500(user){
+    socket.emit('addCoins',{user,amount:500});
+}
+
+function tieScore(user, currentCoins, topCoins){
+    const needed = topCoins - currentCoins;
+    if(needed <= 0) return;
+    socket.emit('addCoins',{user,amount:needed});
+}
+
+function safeId(user){
+    return user.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
 
 let isTyping = false;
+let userOrder = [];
 
 socket.on('update', data => {
 
-    // ❌ STOP updating if user is typing
     if(isTyping) return;
 
     const usersDiv = document.getElementById('users');
+    const bids = data.bids || {};
 
-    usersDiv.innerHTML = Object.entries(data.bids)
-        .sort((a,b)=>b[1]-a[1])
-        .map(([u,c]) => `
-        <div class="user">
-            <span>${u}</span>
-            <span>
-                ${c} 🪙
-                <input 
-                    type="number" 
-                    id="input-${u}" 
-                    placeholder="coins"
-                    class="coinInput"
-                    onfocus="isTyping=true"
-                    onblur="setTimeout(()=>isTyping=false,200)"
-                >
-                <button onclick="setCoins('${u}')" class="blue">SET</button>
-            </span>
-        </div>
-        `).join("");
+    Object.keys(bids).forEach(user => {
+        if(!userOrder.includes(user)){
+            userOrder.push(user);
+        }
+    });
+
+    userOrder = userOrder.filter(user => bids[user] !== undefined);
+
+    const topCoins = Object.values(bids).length ? Math.max(...Object.values(bids)) : 0;
+
+    usersDiv.innerHTML = userOrder
+        .map(u => {
+            const c = bids[u];
+            const id = safeId(u);
+
+            return `
+            <div class="user">
+                <div class="userLeft">
+                    <div class="userName">${u}</div>
+                    <div class="userCoins">${c} 🪙</div>
+                </div>
+
+                <div class="userActions">
+                    <button onclick="tieScore('${u}', ${c}, ${topCoins})" class="purple smallBtn">TIE</button>
+                    <button onclick="add500('${u}')" class="gold smallBtn">+500</button>
+
+                    <input 
+                        type="number" 
+                        id="input-${id}" 
+                        placeholder="coins"
+                        class="coinInput"
+                        onfocus="isTyping=true"
+                        onblur="setTimeout(()=>isTyping=false,200)"
+                    >
+
+                    <button onclick="setCoins('${u}')" class="blue smallBtn">ADD</button>
+                </div>
+            </div>
+            `;
+        }).join("");
 });
 </script>
 
