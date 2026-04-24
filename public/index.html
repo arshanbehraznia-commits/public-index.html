@@ -88,6 +88,7 @@ font-weight:900;
 text-shadow:none;
 box-shadow:none;
 }
+
 .card{
 border:2px solid gold;
 border-radius:24px;
@@ -112,11 +113,56 @@ color:#ff3b3b !important;
 text-shadow:none !important;
 }
 
-#bigSnipe{
-text-align:center;
+/* NEW: small snipe line inside auction box */
+#snipeLine{
+display:none;
+align-items:center;
+justify-content:center;
+white-space:nowrap;
+margin:8px 0 14px;
+}
+
+#snipeLabel{
+font-family:"Arial Black",Arial,sans-serif;
+font-size:23px;
+font-weight:900;
+letter-spacing:.6px;
+transform:scaleY(1.08);
+color:#ff3b3b;
+}
+
+#snipeSmallTime{
+font-family:"Arial Black",Arial,sans-serif;
+font-size:46px;
+font-weight:800;
+line-height:1;
+letter-spacing:-2px;
+color:#ff3b3b;
+margin-left:10px;
+text-shadow:none;
+}
+
+/* NEW: finished timer inside auction box */
+#finishedTimer{
+display:none;
+font-family:"Arial Black",Arial,sans-serif;
 font-size:28px;
 font-weight:900;
+letter-spacing:1.5px;
+transform:scaleY(1.08);
+line-height:1.02;
 color:#ff3b3b;
+text-align:center;
+margin:8px 0 14px;
+}
+
+#finishedTimer .timerWord{
+display:block;
+width:fit-content;
+margin:0 auto;
+}
+
+#bigSnipe{
 display:none;
 }
 
@@ -160,6 +206,7 @@ object-fit:cover;
 background:#444;
 border:none;
 }
+
 .text{display:flex;flex-direction:column;}
 
 .username{
@@ -172,6 +219,7 @@ text-shadow:
 0 0 2px rgba(255,255,255,.45),
 0 0 4px rgba(255,255,255,.18);
 }
+
 .coins{
 display:flex;
 align-items:center;
@@ -273,7 +321,7 @@ text-shadow:
     height:100%;
     pointer-events:none;
     overflow:hidden;
-    z-index:1000; /* 🔥 ABOVE overlay now */
+    z-index:1000;
 }
 
 .confetti-piece{
@@ -289,10 +337,10 @@ from{
     transform:translateY(0) rotate(0deg);
 }
 to{
-    transform:translateY(200px) rotate(720deg); /* smooth drop */
+    transform:translateY(200px) rotate(720deg);
 }
-} </style>
-
+}
+</style>
 </head>
 
 <body>
@@ -318,7 +366,19 @@ to{
 </div>
 
 <div id="bigSnipe">🛡️ SNIPE DELAY</div>
+
 <div id="timer">1:00</div>
+
+<div id="snipeLine">
+<span id="snipeLabel">🛡️ SNIPE DELAY:</span>
+<span id="snipeSmallTime">0:20</span>
+</div>
+
+<div id="finishedTimer">
+<div class="timerWord">TIMER</div>
+<div>FINISHED</div>
+</div>
+
 <div id="leaders"></div>
 <div id="participants">👾 Participants: 0</div>
 
@@ -343,7 +403,7 @@ const piece = document.createElement("div");
 piece.className = "confetti-piece";
 
 piece.style.left = Math.random()*100 + "%";
-piece.style.top = Math.random()*100 + "%"; // 🔥 THIS FIX
+piece.style.top = Math.random()*100 + "%";
 piece.style.background = colors[Math.floor(Math.random()*colors.length)];
 piece.style.animationDuration = (Math.random()*2 + 2) + "s";
 
@@ -388,29 +448,34 @@ socket.on('update', data => {
 avatars = data.avatars || {};
 
 const timerEl = document.getElementById('timer');
+const snipeLine = document.getElementById('snipeLine');
+const snipeSmallTime = document.getElementById('snipeSmallTime');
+const finishedTimer = document.getElementById('finishedTimer');
 
 if(data.inSnipe && data.timer <= 0){
-timerEl.innerText = "TIMER FINISHED";
-timerEl.style.textShadow = "none";
-timerEl.style.fontSize = "32px";
-timerEl.style.letterSpacing = "1px";
-} else {
+timerEl.style.display = "none";
+snipeLine.style.display = "none";
+finishedTimer.style.display = "block";
+}
+else if(data.inSnipe){
+timerEl.style.display = "none";
+finishedTimer.style.display = "none";
+snipeLine.style.display = "flex";
+snipeSmallTime.innerText = formatTime(data.timer);
+}
+else{
+timerEl.style.display = "block";
+snipeLine.style.display = "none";
+finishedTimer.style.display = "none";
+timerEl.classList.remove('timer-red');
 timerEl.innerText = formatTime(data.timer);
-timerEl.style.fontSize = "65px";
+timerEl.style.fontSize = "84px";
 }
 
 if(data.inSnipe){
 timerEl.classList.add('timer-red');
-
-if(data.timer > 0){
-document.getElementById('bigSnipe').style.display = "block";
-} else {
-document.getElementById('bigSnipe').style.display = "none";
-}
-
 } else {
 timerEl.classList.remove('timer-red');
-document.getElementById('bigSnipe').style.display = "none";
 }
 
 let count = data.count || Object.keys(data.bids || {}).length;
