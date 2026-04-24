@@ -11,9 +11,21 @@ body{
     padding:20px;
 }
 
+.layout{
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    justify-content:center;
+}
+
 .panel{
-    max-width:720px;
-    margin:auto;
+    width:720px;
+}
+
+.sidePreview{
+    width:390px;
+    position:sticky;
+    top:20px;
 }
 
 h2{
@@ -108,10 +120,191 @@ button{
 #users{
     margin-top:10px;
 }
+
+/* AUCTION PREVIEW */
+.previewBar{
+    width:388px;
+    height:56px;
+    border-radius:12px;
+    background:#050505;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:"Arial Black",Arial,sans-serif;
+    font-size:18px;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.previewGreen{
+    border:2px solid #2ec49a;
+    color:#2ec49a;
+    font-size:20px;
+    letter-spacing:1.8px;
+    transform:scaleY(1.08);
+}
+
+.previewSnipeBar{
+    border:2px solid #ff3b3b;
+    color:white;
+    position:relative;
+}
+
+.previewSnipeCenter{
+    flex:1;
+    text-align:center;
+    padding-right:78px;
+    font-size:18px;
+    letter-spacing:0.3px;
+    transform:scaleY(1.05);
+}
+
+.previewSnipeTime{
+    position:absolute;
+    right:48px;
+    background:#ff4545;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:20px;
+    font-family:"Arial Black",Arial,sans-serif;
+    font-weight:900;
+}
+
+.previewCard{
+    border:2px solid gold;
+    border-radius:24px;
+    padding:18px;
+    background:#050505;
+}
+
+#previewTimer{
+    font-family:"Arial Black", Arial, sans-serif;
+    font-size:84px;
+    font-weight:800;
+    line-height:1;
+    color:#2ec49a;
+    letter-spacing:-5px;
+}
+
+#previewSnipeLine{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    white-space:nowrap;
+    margin:8px 0 14px;
+}
+
+#previewSnipeLabel{
+    font-family:"Arial Black",Arial,sans-serif;
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:.6px;
+    transform:scaleY(1.08);
+    color:#ff3b3b;
+}
+
+#previewSnipeSmallTime{
+    font-family:"Arial Black",Arial,sans-serif;
+    font-size:46px;
+    font-weight:800;
+    line-height:1;
+    letter-spacing:-2px;
+    color:#ff3b3b;
+    margin-left:10px;
+}
+
+#previewFinished{
+    display:none;
+    font-family:"Arial Black",Arial,sans-serif;
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:1.5px;
+    transform:scaleY(1.08);
+    line-height:1.02;
+    color:#ff3b3b;
+    margin:8px 0 14px;
+}
+
+.previewPlayer{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 14px;
+    margin:10px 0;
+    border-radius:12px;
+    min-height:66px;
+}
+
+.previewFirst{background:rgba(255,215,0,.22);border:2px solid #b88c00;}
+.previewSecond{background:rgba(180,180,180,.18);border:2px solid #8f8f8f;}
+.previewThird{background:rgba(155,90,35,.18);border:2px solid #9d5d25;}
+
+.previewMedal{
+    width:46px;
+    text-align:center;
+    font-size:34px;
+    margin-right:6px;
+}
+
+.previewAvatar{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#444;
+}
+
+.previewText{
+    display:flex;
+    flex-direction:column;
+    text-align:left;
+    min-width:0;
+}
+
+.previewUsername{
+    font-family:"Arial","Helvetica Neue",sans-serif;
+    font-size:18px;
+    font-weight:900;
+    color:#fff;
+    letter-spacing:-0.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:210px;
+}
+
+.previewCoins{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:"Arial Black", Arial, sans-serif;
+    font-size:19px;
+    font-weight:900;
+    color:#fff;
+}
+
+.previewCoinIcon{
+    width:21px;
+    height:21px;
+    object-fit:contain;
+}
+
+#previewParticipants{
+    text-align:center;
+    margin-top:12px;
+    font-weight:700;
+    background:#1a1a1a;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+}
 </style>
 </head>
 
 <body>
+
+<div class="layout">
 
 <div class="panel">
 
@@ -145,6 +338,38 @@ button{
 <div class="section">
 <h3>👥 LIVE USERS</h3>
 <div id="users"></div>
+</div>
+
+</div>
+
+<div class="sidePreview">
+
+<div class="previewBar previewGreen">✅ NO MINIMUM</div>
+
+<div class="previewBar previewSnipeBar">
+<div class="previewSnipeCenter">🛡️ SNIPE DELAY</div>
+<span class="previewSnipeTime">20s</span>
+</div>
+
+<div class="previewCard">
+
+<div id="previewTimer">1:00</div>
+
+<div id="previewSnipeLine">
+<span id="previewSnipeLabel">🛡️ SNIPE DELAY:</span>
+<span id="previewSnipeSmallTime">0:20</span>
+</div>
+
+<div id="previewFinished">
+<div>TIMER</div>
+<div>FINISHED</div>
+</div>
+
+<div id="previewLeaders"></div>
+<div id="previewParticipants">👾 Participants: 0</div>
+
+</div>
+
 </div>
 
 </div>
@@ -201,10 +426,80 @@ function safeId(user){
     return user.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
+function formatCoins(n){
+    return Number(n).toLocaleString();
+}
+
+function formatTime(t){
+    let m=Math.floor(t/60), s=t%60;
+    return m+":"+(s<10?"0"+s:s);
+}
+
+function updatePreview(data){
+    const timer = document.getElementById('previewTimer');
+    const snipeLine = document.getElementById('previewSnipeLine');
+    const snipeSmallTime = document.getElementById('previewSnipeSmallTime');
+    const finished = document.getElementById('previewFinished');
+
+    if(data.inSnipe && data.timer <= 0){
+        timer.style.display = "none";
+        snipeLine.style.display = "none";
+        finished.style.display = "block";
+    }
+    else if(data.inSnipe){
+        timer.style.display = "none";
+        finished.style.display = "none";
+        snipeLine.style.display = "flex";
+        snipeSmallTime.innerText = formatTime(data.timer);
+    }
+    else{
+        timer.style.display = "block";
+        snipeLine.style.display = "none";
+        finished.style.display = "none";
+        timer.innerText = formatTime(data.timer);
+    }
+
+    const bids = data.bids || {};
+    const avatars = data.avatars || {};
+    const sorted = Object.entries(bids).sort((a,b)=>b[1]-a[1]);
+
+    document.getElementById('previewLeaders').innerHTML =
+    [0,1,2].map(i=>{
+        let medal = ["🥇","🥈","🥉"][i];
+        let cls = ["previewFirst","previewSecond","previewThird"][i];
+        let x = sorted[i];
+
+        if(!x){
+            return `<div class="previewPlayer ${cls}">
+                <div class="previewMedal">${medal}</div>
+                <div class="previewAvatar"></div>
+                <div class="previewText">
+                    <div class="previewUsername">Waiting...</div>
+                    <div class="previewCoins"><img src="tiktok.png" class="previewCoinIcon"> 0</div>
+                </div>
+            </div>`;
+        }
+
+        return `<div class="previewPlayer ${cls}">
+            <div class="previewMedal">${medal}</div>
+            <img src="${avatars[x[0]] || ''}" class="previewAvatar">
+            <div class="previewText">
+                <div class="previewUsername">${x[0]}</div>
+                <div class="previewCoins"><img src="tiktok.png" class="previewCoinIcon"> ${formatCoins(x[1])}</div>
+            </div>
+        </div>`;
+    }).join("");
+
+    let count = data.count || Object.keys(bids).length;
+    document.getElementById('previewParticipants').innerText = "👾 Participants: " + count;
+}
+
 let isTyping = false;
 let userOrder = [];
 
 socket.on('update', data => {
+
+    updatePreview(data);
 
     if(isTyping) return;
 
