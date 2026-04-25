@@ -130,7 +130,7 @@ top:1px;
 width:13px;
 height:13px;
 border-radius:50%;
-background:#2ec49a;
+background:currentColor;
 display:block;
 }
 
@@ -158,11 +158,15 @@ color:#ff3b3b;
 }
 
 #snipeSmallTime{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:9px;
 font-family:"Arial Black",Arial,sans-serif;
 font-size:46px;
-font-weight:800;
+font-weight:900;
 line-height:1;
-letter-spacing:-2px;
+letter-spacing:-3px;
 color:#ff3b3b;
 margin-left:10px;
 text-shadow:none;
@@ -393,8 +397,11 @@ to{
 
 <div id="bigSnipe">🛡️ SNIPE DELAY</div>
 
-<div id="timer">1:00</div>
-
+<div id="timer">
+<span>1</span>
+<span class="colon"><i></i><i></i></span>
+<span>00</span>
+</div>
 <div id="snipeLine">
 <span id="snipeLabel">🛡️ SNIPE DELAY:</span>
 <span id="snipeSmallTime">0:20</span>
@@ -497,16 +504,14 @@ else if(data.inSnipe){
 timerEl.style.display = "none";
 finishedTimer.style.display = "none";
 snipeLine.style.display = "flex";
-snipeSmallTime.innerText = formatTime(data.timer);
-}
+snipeSmallTime.innerHTML = formatTime(data.timer);
 else{
 timerEl.style.display = "block";
 snipeLine.style.display = "none";
 finishedTimer.style.display = "none";
 timerEl.classList.remove('timer-red');
 timerEl.innerHTML = formatTime(data.timer);
-timerEl.style.fontSize = "84px";
-}
+timerEl.style.fontSize = "76px";
 
 if(data.inSnipe){
 timerEl.classList.add('timer-red');
