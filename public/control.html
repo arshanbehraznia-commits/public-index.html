@@ -179,12 +179,33 @@ button{
 }
 
 #previewTimer{
-    font-family:"Arial Black", Arial, sans-serif;
-    font-size:84px;
-    font-weight:800;
-    line-height:1;
-    color:#2ec49a;
-    letter-spacing:-5px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:9px;
+font-family:"Arial Black",Arial,sans-serif;
+font-size:76px;
+font-weight:900;
+line-height:1;
+letter-spacing:-3px;
+color:#2ec49a;
+font-variant-numeric:lining-nums tabular-nums;
+text-shadow:none;
+}
+.previewColon{
+display:flex;
+flex-direction:column;
+gap:13px;
+position:relative;
+top:1px;
+}
+
+.previewColon i{
+width:13px;
+height:13px;
+border-radius:50%;
+background:currentColor;
+display:block;
 }
 
 #previewSnipeLine{
@@ -205,13 +226,17 @@ button{
 }
 
 #previewSnipeSmallTime{
-    font-family:"Arial Black",Arial,sans-serif;
-    font-size:46px;
-    font-weight:800;
-    line-height:1;
-    letter-spacing:-2px;
-    color:#ff3b3b;
-    margin-left:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:9px;
+font-family:"Arial Black",Arial,sans-serif;
+font-size:46px;
+font-weight:900;
+line-height:1;
+letter-spacing:-3px;
+color:#ff3b3b;
+margin-left:10px;
 }
 
 #previewFinished{
@@ -353,7 +378,11 @@ button{
 
 <div class="previewCard">
 
-<div id="previewTimer">1:00</div>
+<div id="previewTimer">
+<span>1</span>
+<span class="previewColon"><i></i><i></i></span>
+<span>00</span>
+</div>
 
 <div id="previewSnipeLine">
 <span id="previewSnipeLabel">🛡️ SNIPE DELAY:</span>
@@ -431,8 +460,18 @@ function formatCoins(n){
 }
 
 function formatTime(t){
-    let m=Math.floor(t/60), s=t%60;
-    return m+":"+(s<10?"0"+s:s);
+    let m=Math.floor(t/60);
+    let s=t%60;
+    s = s<10 ? "0"+s : s;
+
+    return `
+    <span>${m}</span>
+    <span class="previewColon">
+        <i></i>
+        <i></i>
+    </span>
+    <span>${s}</span>
+    `;
 }
 
 function updatePreview(data){
@@ -447,17 +486,17 @@ function updatePreview(data){
         finished.style.display = "block";
     }
     else if(data.inSnipe){
-        timer.style.display = "none";
-        finished.style.display = "none";
-        snipeLine.style.display = "flex";
-        snipeSmallTime.innerText = formatTime(data.timer);
-    }
-    else{
-        timer.style.display = "block";
-        snipeLine.style.display = "none";
-        finished.style.display = "none";
-        timer.innerText = formatTime(data.timer);
-    }
+    timer.style.display = "none";
+    finished.style.display = "none";
+    snipeLine.style.display = "flex";
+    snipeSmallTime.innerHTML = formatTime(data.timer);
+}
+else{
+    timer.style.display = "block";
+    snipeLine.style.display = "none";
+    finished.style.display = "none";
+    timer.innerHTML = formatTime(data.timer);
+}
 
     const bids = data.bids || {};
     const avatars = data.avatars || {};
