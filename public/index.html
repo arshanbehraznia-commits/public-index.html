@@ -102,14 +102,36 @@ position:relative;
 }
 
 #timer{
-font-family:"Arial Black", Arial, sans-serif;
-font-size:84px;
-font-weight:800;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:9px;
+
+font-family:"Arial Black",Arial,sans-serif;
+font-size:76px;
+font-weight:900;
 line-height:1;
-text-align:center;
+letter-spacing:-3px;
+
 color:#2ec49a;
-letter-spacing:-5px;
+font-variant-numeric:lining-nums tabular-nums;
+
 text-shadow:none;
+}
+.colon{
+display:flex;
+flex-direction:column;
+gap:13px;
+position:relative;
+top:1px;
+}
+
+.colon i{
+width:13px;
+height:13px;
+border-radius:50%;
+background:#2ec49a;
+display:block;
 }
 
 .timer-red{
@@ -427,8 +449,18 @@ return Number(n).toLocaleString();
 }
 
 function formatTime(t){
-let m=Math.floor(t/60), s=t%60;
-return m+":"+(s<10?"0"+s:s);
+let m=Math.floor(t/60);
+let s=t%60;
+s = s<10 ? "0"+s : s;
+
+return `
+<span>${m}</span>
+<span class="colon">
+<i></i>
+<i></i>
+</span>
+<span>${s}</span>
+`;
 }
 
 function resetBoard(){
@@ -472,7 +504,7 @@ timerEl.style.display = "block";
 snipeLine.style.display = "none";
 finishedTimer.style.display = "none";
 timerEl.classList.remove('timer-red');
-timerEl.innerText = formatTime(data.timer);
+timerEl.innerHTML = formatTime(data.timer);
 timerEl.style.fontSize = "84px";
 }
 
