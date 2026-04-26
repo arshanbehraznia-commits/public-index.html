@@ -5,7 +5,11 @@ const { WebcastPushConnection } = require('tiktok-live-connector');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+const io = new Server(server, {
+    pingInterval: 25000,
+    pingTimeout: 60000
+});
 
 // 🔥 SERVE FRONTEND
 app.use(express.static('public'));
@@ -25,6 +29,7 @@ app.get('/control.html', (req, res) => {
 
 let tiktok = null;
 let connected = false;
+let currentUsername = null;
 
 let bids = {};
 let avatars = {};
@@ -35,6 +40,31 @@ let running = false;
 let inSnipe = false;
 
 const SNIPE_TIME = 20;
+const recentGifts = new Set();
+
+function sendUpdate(){
+    io.emit('update', {
+        bids,
+        avatars,
+        timer,
+        count: participants.size,
+        inSnipe
+    });
+}
+
+function addCoinsToUser(user, amount, avatar = ""){
+    if (!user || !amount) return;
+
+    if (!bids[user]) bids[user] = 0;
+    bids[user] += Number(amount);
+
+    participants.add(user);
+
+    if (avatar) avatars[user] = avatar;
+    if (!avatars[user]) avatars[user] = "";
+
+    sendUpdate();
+}
 
 // 🔁 TIMER LOOP
 setInterval(() => {
@@ -57,18 +87,122 @@ setInterval(() => {
         }
     }
 
-    io.emit('update', {
-        bids,
-        avatars,
-        timer,
-        count: participants.size,
-        inSnipe
-    });
+    sendUpdate();
 
 }, 1000);
 
+async function connectToTikTok(username, socket){
+    currentUsername = username;
+
+    try {
+        if (tiktok) {
+            try {
+                tiktok.removeAllListeners('gift');
+                tiktok.removeAllListeners('disconnected');
+                tiktok.removeAllListeners('streamEnd');
+            } catch {}
+        }
+
+        tiktok = new WebcastPushConnection(username);
+
+        await tiktok.connect();
+        connected = true;
+
+        console.log("TikTok connected:", username);
+
+        if (socket) socket.emit('connected');
+
+        // 🎁 GIFTS
+        tiktok.on('gift', data => {
+            console.log(
+                "GIFT:",
+                data.uniqueId,
+                data.giftName,
+                "diamonds:",
+                data.diamondCount,
+                "repeat:",
+                data.repeatCount,
+                "repeatEnd:",
+                data.repeatEnd
+            );
+
+            if (!running) {
+                console.log("Gift ignored because auction is not running");
+                return;
+            }
+
+            const user = data.uniqueId;
+
+            const avatar =
+                data.profilePictureUrl ||
+                data.userDetails?.profilePicture?.urls?.[0] ||
+                "";
+
+            // Prevent exact duplicate events being counted twice
+            const giftKey =
+                data.msgId ||
+                data.messageId ||
+                `${data.uniqueId}-${data.giftId}-${data.diamondCount}-${data.repeatCount}-${data.repeatEnd}-${data.createTime || data.timestamp || Date.now()}`;
+
+            if (recentGifts.has(giftKey)) {
+                console.log("Duplicate gift ignored");
+                return;
+            }
+
+            recentGifts.add(giftKey);
+            setTimeout(() => recentGifts.delete(giftKey), 60000);
+
+            // For streak gifts, wait until streak ends so it counts once properly
+            if (data.giftType === 1 && data.repeatEnd === false) {
+                console.log("Waiting for streak gift to finish");
+                return;
+            }
+
+            let coins = Number(data.diamondCount || 1);
+
+            // If TikTok sends a streak gift final packet, use diamondCount raw if it already includes total.
+            // If your terminal shows wrong values after testing, we can adjust this line.
+            if (!coins || coins < 1) coins = 1;
+
+            addCoinsToUser(user, coins, avatar);
+        });
+
+        // 🔁 AUTO RECONNECT
+        tiktok.on('disconnected', async () => {
+            connected = false;
+            console.log("TikTok disconnected. Reconnecting...");
+
+            while (!connected && currentUsername) {
+                try {
+                    await new Promise(r => setTimeout(r, 3000));
+                    await connectToTikTok(currentUsername);
+                } catch (err) {
+                    console.log("Reconnect failed, retrying...");
+                }
+            }
+        });
+
+        tiktok.on('streamEnd', () => {
+            connected = false;
+            console.log("TikTok stream ended");
+        });
+
+    } catch (err) {
+        connected = false;
+        console.log("Connection failed", err);
+        if (socket) socket.emit('failed');
+    }
+}
+
 // 🔗 SOCKET
 io.on('connection', socket => {
+
+    console.log("Browser connected:", socket.id);
+    sendUpdate();
+
+    socket.on('disconnect', () => {
+        console.log("Browser disconnected:", socket.id);
+    });
 
     socket.on('connectTikTok', async (username) => {
 
@@ -77,64 +211,7 @@ io.on('connection', socket => {
             return;
         }
 
-        try {
-            tiktok = new WebcastPushConnection(username);
-
-            await tiktok.connect();
-            connected = true;
-
-            console.log("TikTok connected");
-
-            socket.emit('connected');
-
-            // 🎁 GIFTS
-            tiktok.on('gift', data => {
-
-                if (!running) return;
-
-                const user = data.uniqueId;
-                const coins = data.diamondCount;
-
-                const avatar =
-                    data.profilePictureUrl ||
-                    data.userDetails?.profilePicture?.urls?.[0] ||
-                    "";
-
-                if (!bids[user]) bids[user] = 0;
-                bids[user] += coins;
-
-                avatars[user] = avatar;
-                participants.add(user);
-
-                io.emit('update', {
-                    bids,
-                    avatars,
-                    timer,
-                    count: participants.size,
-                    inSnipe
-                });
-            });
-
-            // 🔁 AUTO RECONNECT
-            tiktok.on('disconnected', async () => {
-                connected = false;
-                console.log("Reconnecting...");
-
-                while (!connected) {
-                    try {
-                        await tiktok.connect();
-                        connected = true;
-                        console.log("Reconnected");
-                    } catch {
-                        await new Promise(r => setTimeout(r, 3000));
-                    }
-                }
-            });
-
-        } catch (err) {
-            console.log("Connection failed", err);
-            socket.emit('failed');
-        }
+        await connectToTikTok(username, socket);
     });
 
     // ▶ START
@@ -142,18 +219,13 @@ io.on('connection', socket => {
         bids = {};
         avatars = {};
         participants.clear();
+        recentGifts.clear();
 
         timer = 60;
         running = true;
         inSnipe = false;
 
-        io.emit('update', {
-            bids,
-            avatars,
-            timer,
-            count: 0,
-            inSnipe: false
-        });
+        sendUpdate();
     });
 
     // 🔁 RESET
@@ -161,58 +233,42 @@ io.on('connection', socket => {
         bids = {};
         avatars = {};
         participants.clear();
+        recentGifts.clear();
 
         timer = 60;
         running = false;
         inSnipe = false;
 
-        io.emit('update', {
-            bids: {},
-            avatars: {},
-            timer: 60,
-            count: 0,
-            inSnipe: false
-        });
+        sendUpdate();
     });
 
     // ⏸ PAUSE
     socket.on('pause', () => {
         running = false;
+        sendUpdate();
     });
 
     // ▶ RESUME
     socket.on('resume', () => {
         running = true;
+        sendUpdate();
     });
 
     // ➕ ADD TIME
     socket.on('addTime', (t) => {
         timer += Number(t);
+        if (timer < 0) timer = 0;
+        sendUpdate();
     });
 
     socket.on('removeTime', (t) => {
         timer = Math.max(0, timer - Number(t));
+        sendUpdate();
     });
 
     // ➕ ADD COINS
     socket.on('addCoins', ({user, amount}) => {
-
-        if (!user || !amount) return;
-
-        if (!bids[user]) bids[user] = 0;
-        bids[user] += Number(amount);
-
-        participants.add(user);
-
-        if (!avatars[user]) avatars[user] = "";
-
-        io.emit('update', {
-            bids,
-            avatars,
-            timer,
-            count: participants.size,
-            inSnipe
-        });
+        addCoinsToUser(user, Number(amount), avatars[user] || "");
     });
 
     // ➖ REMOVE COINS
@@ -227,13 +283,7 @@ io.on('connection', socket => {
             participants.delete(user);
         }
 
-        io.emit('update', {
-            bids,
-            avatars,
-            timer,
-            count: participants.size,
-            inSnipe
-        });
+        sendUpdate();
     });
 
 });
